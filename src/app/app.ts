@@ -1,6 +1,8 @@
 import * as Koa from "koa";
 import * as HttpStatus from "http-status-codes";
 
+import movieController from "../movie/movie.controller";
+
 const app: Koa = new Koa();
 
 /* Generic error handling middleware. */
@@ -18,10 +20,13 @@ app.use(async (ctx: Koa.Context, next: () => Promise<any>) => {
   }
 });
 
-/* Initial route */
-app.use(async (ctx: Koa.Context) => {
-  ctx.body = { message: "Hello world!" };
-});
+/* Add a routes middleware to the application. */
+app.use(movieController.routes());
+/*
+Add another middleware that will ensure
+correct responses are given for disallowed or non-implemented methods.
+*/
+app.use(movieController.allowedMethods());
 
 /* Application error logging */
 app.on("error", console.error);
