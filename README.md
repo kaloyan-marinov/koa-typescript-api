@@ -22,3 +22,5 @@ $ curl -X DELETE localhost:3000/movies/17
 $ curl -X PATCH localhost:3000/movies/17
 {"message":"update the movie with an ID of 17"}
 ```
+
+The tutorial instructions had to be augmented by the suggestion made in https://andrew.hawker.io/dailies/2020/02/25/postgres-uninitialized-error/
