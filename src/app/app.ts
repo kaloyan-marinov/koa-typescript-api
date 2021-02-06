@@ -1,5 +1,6 @@
 import * as Koa from "koa";
 import * as HttpStatus from "http-status-codes";
+import * as bodyParser from "koa-bodyparser";
 
 import movieController from "../movie/movie.controller";
 
@@ -19,6 +20,9 @@ app.use(async (ctx: Koa.Context, next: () => Promise<any>) => {
     ctx.app.emit("error", error, ctx);
   }
 });
+
+/* Add a middleware that enables the application to read the request body. */
+app.use(bodyParser());
 
 /* Add a routes middleware to the application. */
 app.use(movieController.routes());
