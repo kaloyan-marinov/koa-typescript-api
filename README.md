@@ -1,144 +1,90 @@
-To have Nodemon start our server listening on port 3000, issue:
+1. Open a terminal window and issue:
 
-```
-$ npm start
-```
+   ```
+   $ docker-compose up
+   ```
 
-To make requests to the server, open another terminal window and issue in that window:
+   _NOTE_: The tutorial's version of the `docker-compose.yml` file had to be augmented by the suggestion made in https://andrew.hawker.io/dailies/2020/02/25/postgres-uninitialized-error/
 
-```
-$ curl localhost:3000/movies/d087533d-0ec5-4099-a735-ca7c243bad43
-{
-    "data":
-        {"movie":
-            {
-                "name": "Home Alone",
-                "releaseYear": 1990,
-                "rating": 8,
-                "id": "d087533d-0ec5-4099-a735-ca7c243bad43"
-            }
-        }
-}
+2. To have Nodemon start our server listening on port 3000, open a second terminal window and issue:
 
-$ curl -v \
-    localhost:3000/movies
-{
-    "data":
-        {"movie":
-            [
-                {
-                    "id": "d087533d-0ec5-4099-a735-ca7c243bad43",
-                    "name": "Home Alone",
-                    "releaseYear": 1990,
-                    "rating": 8,
-                    "id": "d087533d-0ec5-4099-a735-ca7c243bad43"
-                }
-            ]
-        }
-}
+   ```
+   $ npm start
+   ```
 
-$ curl -v \
-    -H "Content-Type: application/json" \
-    -X POST \
-    -d '{"name": "Home Alone", "releaseYear": 1990, "rating": 8}' \
-    localhost:3000/movies
-{
-    "data":
-        {"movie":
-            {
-                "name": "Home Alone",
-                "releaseYear": 1990,
-                "rating": 8,
-                "id": "d087533d-0ec5-4099-a735-ca7c243bad43"
-            }
-        }
-}
+3. To make requests to the server, open a third terminal window and issue in that window:
 
-$ curl -X DELETE localhost:3000/movies/17
-{"message":"delete the movie with an ID of 17"}
+   ```
+   $ curl -v \
+       -H "Content-Type: application/json" \
+       -X POST \
+       -d '{"name": "Home Alone", "releaseYear": 1990, "rating": 8}' \
+       localhost:3000/movies
 
-$ curl -v -X PATCH -H 'Content-Type: application/json' -d '{"name": "1test"}' localhost:3000/movies/d087533d-0ec5-4099-a735-ca7c243bad43
-{
-    "data":
-        {
-            "movie":
-                {
-                    "id": "d087533d-0ec5-4099-a735-ca7c243bad43",
-                    "name": "1test",
-                    "releaseYear": 1990,
-                    "rating": 8
-                }
-        }
-}
-```
+   {
+       "data":
+           {"movie":
+               {
+                   "name": "Home Alone",
+                   "releaseYear": 1990,
+                   "rating": 8,
+                   "id": "d087533d-0ec5-4099-a735-ca7c243bad43"
+               }
+           }
+   }
 
-The tutorial instructions had to be augmented by the suggestion made in https://andrew.hawker.io/dailies/2020/02/25/postgres-uninitialized-error/
+   $ export MOVIE_ID=<the-id-returned-as-part-of-the-response>
 
-```
-$ curl -v \
-    -H "Content-Type: application/json" \
-    -X POST \
-    -d '{"name": "Home Alone", "releaseYear": 1990, "rating": 8}' \
-    localhost:3000/movies
+   $ curl -v localhost:3000/movies
 
-{
-    "data":
-        {"movie":
-            {
-                "name": "Home Alone",
-                "releaseYear": 1990,
-                "rating": 8,
-                "id": "d087533d-0ec5-4099-a735-ca7c243bad43"
-            }
-        }
-}
+   {
+       "data":
+           {"movies":
+               [
+                   {
+                       "id": "${MOVIE_ID}",
+                       "name": "Home Alone",
+                       "releaseYear": 1990,
+                       "rating": 8,
+                   }
+               ]
+           }
+   }
 
-$ curl -v \
-    localhost:3000/movies
+   $ curl -v localhost:3000/movies/${MOVIE_ID}
 
-{
-    "data":
-        {"movies":
-            [
-                {
-                    "id": "d087533d-0ec5-4099-a735-ca7c243bad43",
-                    "name": "Home Alone",
-                    "releaseYear": 1990,
-                    "rating": 8,
-                    "id": "d087533d-0ec5-4099-a735-ca7c243bad43"
-                }
-            ]
-        }
-}
+   {
+       "data":
+           {"movie":
+               {
+                   "name": "Home Alone",
+                   "releaseYear": 1990,
+                   "rating": 8,
+                   "id": "${MOVIE_ID}"
+               }
+           }
+   }
 
-$ curl localhost:3000/movies/d087533d-0ec5-4099-a735-ca7c243bad43
+   $ curl -v \
+       -X PATCH \
+       -H 'Content-Type: application/json' \
+       -d '{"name": "Home Alone 2", "releaseYear": 1992}' \
+       localhost:3000/movies/${MOVIE_ID}
 
-{
-    "data":
-        {"movie":
-            {
-                "name": "Home Alone",
-                "releaseYear": 1990,
-                "rating": 8,
-                "id": "d087533d-0ec5-4099-a735-ca7c243bad43"
-            }
-        }
-}
+   {
+       "data":
+           {
+               "movie":
+                   {
+                       "id": "${MOVIE_ID}",
+                       "name": "Home Alone 2",
+                       "releaseYear": 1992,
+                       "rating": 8
+                   }
+           }
+   }
 
-$ curl -v -X PATCH -H 'Content-Type: application/json' -d '{"name": "Home Alone 2", "releaseYear": 1992}' localhost:3000/movies/d087533d-0ec5-4099-a735-ca7c243bad43
-
-{
-    "data":
-        {
-            "movie":
-                {
-                    "id": "d087533d-0ec5-4099-a735-ca7c243bad43",
-                    "name": "Home Alone 2",
-                    "releaseYear": 1992,
-                    "rating": 8
-                }
-        }
-}
-
-$ curl -X DELETE localhost:3000/movies/d087533d-0ec5-4099-a735-ca7c243bad43
-```
+   $ curl \
+       -X DELETE \
+       localhost:3000/movies/${MOVIE_ID}
+   ```
